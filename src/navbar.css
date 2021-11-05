@@ -1,0 +1,36 @@
+nav {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 10px;
+    display: flex;
+    justify-content: right;
+    color: #fff;
+    position: sticky;
+    z-index: 99;
+  }
+  
+  .headerT {
+    font-weight: 400;
+    font-size: 25px;
+    color: white;
+  }
+  
+  .menulist {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: right;
+  }
+  
+  .menulist li a {
+    text-decoration: none;
+    color: #ffff;
+    font-weight: 200;
+    padding: 5px 10px;
+    margin-left: 20px;
+  }
+  
+  .menulist li a:hover,
+  .menulist li a.active {
+    text-decoration: underline;
+  }
+  
