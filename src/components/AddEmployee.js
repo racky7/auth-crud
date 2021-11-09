@@ -3,25 +3,26 @@ import {useHistory} from 'react-router-dom'
 import Modal from 'react-modal'
 Modal.setAppElement('#root');
 
-const AddEmployee = ({setEmployeeData, employeeData}) => {
+const AddEmployee = ({setEmployeeData, employeeData, token}) => {
     const [modalOpen, setModalOpen] = useState(false);
     const history = useHistory();
-    const [name,setName] = useState('');
-    const [phone,setPhone] = useState('');
-    const [email,setEmail] = useState('');
-    const [age,setAge] = useState('');
-    const [country,setCountry] = useState('');
-    const [address,setAddress] = useState('');
+    const [name,setName] = useState(' ');
+    const [phone,setPhone] = useState(' ');
+    const [email,setEmail] = useState(' ');
+    const [age,setAge] = useState(' ');
+    const [country,setCountry] = useState(' ');
+    const [address,setAddress] = useState(' ');
 
     async function addEmp(){
         
-        const addEmployeeApi = "https://mockrestapi.herokuapp.com/api/employee";
+        const addEmployeeApi = "https://mockrestapi.herokuapp.com/api/auth/employee";
         let item = {name, email, age, phone, country, address};
         
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json',
-                        'Accept' : 'application/json'     },
+                        'Accept' : 'application/json',
+                        'Authorization': token     },
             body: JSON.stringify(item)
         };
 

@@ -26,9 +26,9 @@ const Login = () => {
         if(!data.error){
             localStorage.setItem("errMsg", JSON.stringify(false));
             localStorage.setItem("usrName", JSON.stringify(data.user.name))
-            // localStorage.setItem("token", JSON.stringify(data.token))
-            localStorage.setItem("email", JSON.stringify(data.user.email))
-            localStorage.setItem("password", JSON.stringify(password))
+            localStorage.setItem("token", JSON.stringify(data.token))
+            // localStorage.setItem("email", JSON.stringify(data.user.email))
+            // localStorage.setItem("password", JSON.stringify(password))
 
             history.push("/dashboard");
             

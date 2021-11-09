@@ -7,8 +7,9 @@ import SearchEmployee from "./SearchEmployee";
 
 
 const EmployeeTable = ({setEmployeeData, employeeData}) => {
+  const token = JSON.parse(localStorage.getItem("token"));
     const url =
-    "https://mockrestapi.herokuapp.com/api/employee?limit=undefined";
+  `https://mockrestapi.herokuapp.com/api/auth/employee?limit=undefined`;
   
 // const [employeeData, setEmployeeData] = useState([]);
 
@@ -17,11 +18,22 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
   
   
   const getEmployee = async () => {
+
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Authorization': token }
       
-    const response = await fetch(url);
+  };
+      
+    const response = await fetch(url, requestOptions);
     const employeeData = await response.json();
+    
+    if(employeeData.error===false){
     setEmployeeData(employeeData.data);
-    // setLoading(false);
+  }
+  
+    // console.log(employeeData)
+    setLoading(false);
     
   };
 
@@ -31,10 +43,12 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
 
    
 
-    // if (loading) {
+    if (loading) {
       
       getEmployee();
-    // }
+     
+      
+    }
   }, []);
 
   
@@ -42,6 +56,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
   async function deleteUser(userID){
     //  console.log(userID);
      const deleteApi = "https://mockrestapi.herokuapp.com/api/employee/";
+
       await fetch(deleteApi+userID, { method: 'DELETE' });
       const newEmployee = employeeData.filter((idEmp) => idEmp._id !== userID);
       setEmployeeData(newEmployee);
@@ -100,10 +115,26 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
           </div>
           
           <br/>
-                    
+
+          {loading ? (
+          <>
+            <center>
+             <br/><br/>
+              <div class="loadingio-spinner-rolling-9wwlhi5tw7" >
+                <div class="ldio-raemflyyk8">
+            <div></div>
+              </div>
+              </div>
+              
+                
+              
+            </center>
+          </>
+        ) : (
+          <>      
               <table className="table table-hover" {...getTableProps()}>
                 <thead>
-                  {headerGroups.map((headerGroup) => (
+                  {headerGroups.map((headerGroup) => (<>
                     <tr {...headerGroup.getHeaderGroupProps()}>
                       {headerGroup.headers.map((column) => (
                         <th
@@ -119,10 +150,17 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
                                 : " ▲"
                               : ""}
                           </span>
-                        </th>
+                          </th>
+                        
                       ))}
+                      
+                        
+                        
                     </tr>
+                    
+                    </>
                   ))}
+                  
                 </thead>
                 <tbody {...getTableBodyProps()}>
                   {page.map((row) => {
@@ -145,7 +183,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
                             <span> </span>
                             {/* <Link to={`/edit/${row.original._id}`}><button  class="btn btn-rounded btn-primary">Edit</button></Link> */}
                             <span> </span>
-                            {/* <button onClick={()=>compFun(row.original._id)}>Click Me</button> */}
+                            
 
                             <EditEmployee setEmployeeData={setEmployeeData} employeeData={employeeData} userID={row.original._id}/>
                            
@@ -186,12 +224,16 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
                       }}/>
                     </span>
                   </center>
+
+                </>
+        )}
+              
                   
 
               
 
               
-            </div>
+        </div>
         </>
     )
 }
