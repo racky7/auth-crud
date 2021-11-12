@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 import { COLUMNS } from "./TableColumn";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import EditEmployee from "./EditEmployee";
 import SearchEmployee from "./SearchEmployee";
+import ReactPaginate from 'react-paginate'
 
 
 const EmployeeTable = ({setEmployeeData, employeeData}) => {
+ // const [currentPage, setCurrentPage]= useState(1)
   const token = JSON.parse(localStorage.getItem("token"));
-    const url =
-  `https://mockrestapi.herokuapp.com/api/auth/employee?limit=undefined`;
+    
   
 // const [employeeData, setEmployeeData] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [searchE,setSearchE] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [filter, setFilter] = useState('');
+  let url =
+  `https://mockrestapi.herokuapp.com/api/auth/employee?pageNo=1&limit=10`;
+  const history = useHistory();
   
-  
-  const getEmployee = async () => {
-
+  const getEmployee = async (currentPage) => {
+    
     const requestOptions = {
       method: 'GET',
       headers: { 'Authorization': token }
@@ -30,7 +36,12 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
     
     if(employeeData.error===false){
     setEmployeeData(employeeData.data);
-  }
+    setTotal(employeeData.total)
+    } 
+    else if(employeeData.error===true){
+      localStorage.clear();
+      history.push('/login');
+    }
   
     // console.log(employeeData)
     setLoading(false);
@@ -98,6 +109,39 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
 
   const {pageIndex} = state;
 
+  function handlePageClick(data){
+    // alert(data.selected)
+    //setCurrentPage(data.selected+1);
+    //console.log(data.selected+1)
+    url =
+  `https://mockrestapi.herokuapp.com/api/auth/employee?pageNo=${data.selected+1}&limit=10`;
+    getEmployee(url);
+
+  }
+
+  const getEmployeeDataPage = async (searchApi, nameFilter) => {
+    // if(filter===""){    
+    //   setSearchE(false);
+    //   } else setSearchE(true);
+    
+      const response = await fetch(searchApi+nameFilter);
+      const employeeData = await response.json();
+      setEmployeeData(employeeData.data);
+      
+      // setLoading(false);
+      
+    };
+
+  function handleSearchClick(data){
+    console.log("functionchala...")
+    const searchApi = `https://mockrestapi.herokuapp.com/api/employee?pageNo=${data.selected+1}&limit=10&name=`;
+
+    getEmployeeDataPage(searchApi, filter)
+
+    
+
+  }
+
  
 
     return (
@@ -106,7 +150,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
           <div>
             
             
-          <SearchEmployee setEmployeeData={setEmployeeData} employeeData={employeeData} />
+          <SearchEmployee setEmployeeData={setEmployeeData} employeeData={employeeData} setTotal={setTotal} setSearchE={setSearchE} filter={filter} setFilter={setFilter}/>
           
           <span> </span>
             
@@ -115,6 +159,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
           </div>
           
           <br/>
+          
 
           {loading ? (
           <>
@@ -179,7 +224,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
                           );
                         })}
                          <td>
-                            <button onClick={()=>deleteUser(row.original._id)} class="btn btn-rounded btn-danger">Delete</button>
+                            <button onClick={()=>deleteUser(row.original._id)} className="btn btn-rounded btn-danger">Delete</button>
                             <span> </span>
                             {/* <Link to={`/edit/${row.original._id}`}><button  class="btn btn-rounded btn-primary">Edit</button></Link> */}
                             <span> </span>
@@ -187,6 +232,7 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
 
                             <EditEmployee setEmployeeData={setEmployeeData} employeeData={employeeData} userID={row.original._id}/>
                            
+
                             
                           </td>
                           
@@ -206,29 +252,72 @@ const EmployeeTable = ({setEmployeeData, employeeData}) => {
               <center>
               
                     {/* <button class="btn btn-rounded btn-primary" onClick={()=>gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button> */}
-                    <span> </span>
+                    {/* <span> </span>
                     <button onClick={()=>previousPage()} disabled={!canPreviousPage} class="btn btn-rounded btn-primary">Previous</button>
                     <span> Page{' '} {pageIndex + 1} of {pageOptions.length} </span>
 
                     
 
                     <button onClick={()=>nextPage()} disabled={!canNextPage} class="btn btn-rounded btn-primary">Next</button>
-                    <span> </span>
+                    <span> </span> */}
                     {/* <button class="btn btn-rounded btn-primary" onClick={()=>gotoPage(pageCount-1)} disabled={!canNextPage}>{'>>'}</button> */}
 
-                    <span> 
+                    {/* <span> 
                       Go to page: {' '}
                       <input style={{width:"5%"}} type='number' defaultValue={pageIndex + 1} onChange={e=>{
                         const pageNumber = e.target.value ? Number(e.target.value) - 1: 0
                         gotoPage(pageNumber)
                       }}/>
-                    </span>
+                    </span> */}
                   </center>
+                  
+                  {searchE?(<>
+                    <center>
+                  <ReactPaginate
+                  
+                  onPageChange={handleSearchClick}
+                  pageCount={total/10}
+                  containerClassName={'btn-group '}
+                  pageClassName={'btn-group btn-primary'}
+                  pageLinkClassName={'btn btn btn-primary'}
+                  previousClassName={'btn btn-primary'}
+                  previousLinkClassName={'btn btn-primary'}
+                  nextClassName={'btn btn-primary'}
+                  nextLinkClassName={'btn btn-primary'}
+                  
+
+                  />
+                    
+                  
+                 </center>
+                  </>):(<>
+                    <center>
+                  <ReactPaginate
+                  
+                  onPageChange={handlePageClick}
+                  pageCount={total/10}
+                  containerClassName={'btn-group '}
+                  pageClassName={'btn-group btn-primary'}
+                  pageLinkClassName={'btn btn btn-primary'}
+                  previousClassName={'btn btn-primary'}
+                  previousLinkClassName={'btn btn-primary'}
+                  nextClassName={'btn btn-primary'}
+                  nextLinkClassName={'btn btn-primary'}
+                  
+
+                  />
+                    
+                  
+                 </center>
+                  </>)}
+                  
+
+                  
 
                 </>
         )}
               
-                  
+              
 
               
 
