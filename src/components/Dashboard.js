@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import Navbar from './Navbar';
 import EmployeeTable from './EmployeeTable';
-import {useHistory} from 'react-router-dom'
+import {useHistory, Link} from 'react-router-dom'
 
 import AddEmployee from './AddEmployee'
+import AddEmployeeBulk from './AddEmployeeBulk';
 
 
 const Dashboard = () => {
@@ -41,6 +42,9 @@ const Dashboard = () => {
 
        <center><h1 style={{margin:10}}> DashBoard</h1></center>
         <AddEmployee setEmployeeData={setEmployeeData} token={token} employeeData={employeeData}/>
+        <Link to='/addEmployeeBulk' className="btn btn-rounded btn-success" style={{margin:5, padding:5, fontSize:18}}>Add Employee Bulk</Link>
+
+
         </div>
        <EmployeeTable setEmployeeData={setEmployeeData} employeeData={employeeData} />
        
